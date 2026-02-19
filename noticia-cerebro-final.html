@@ -384,6 +384,31 @@ function elegir(op){
   document.getElementById('res-falso').classList.remove('show');
   document.getElementById('res-'+op).classList.add('show');
   spawnConfetti(30);
+  // Guardar respuesta y permitir mostrar resultado final
+  window.vfRespuesta = op;
+  setTimeout(()=>{
+    if((earned.length+1-failed.length)>=4){ // 4 o más pistas ganadas
+      mostrarResultadoFinal();
+    }
+  }, 2000);
+}
+
+function mostrarResultadoFinal(){
+  // La noticia es VERDADERA
+  const correcta = 'verdadero';
+  let acierto = (window.vfRespuesta === correcta);
+  let pistas = earned.length+1-failed.length;
+  let msg = '';
+  if(pistas>=4 && acierto){
+    msg = `<div style="font-size:2.2rem;color:var(--green);font-family:'Fredoka One',cursive">🎉 ¡FELICITACIONES!</div><div style="margin:12px 0 8px;font-size:1.2rem">Acertaste la noticia y desbloqueaste <b>${pistas}</b> pistas.</div><div style="color:#a78bfa;font-size:1.1rem">¡Eres un gran pensador crítico!</div>`;
+  }else if(pistas>=4 && !acierto){
+    msg = `<div style="font-size:2.2rem;color:var(--yellow);font-family:'Fredoka One',cursive">🧐 Casi...</div><div style="margin:12px 0 8px;font-size:1.2rem">Desbloqueaste <b>${pistas}</b> pistas, pero tu respuesta final no fue correcta.</div><div style="color:#a78bfa;font-size:1.1rem">¡Sigue practicando!</div>`;
+  }else{
+    msg = `<div style="font-size:2.2rem;color:var(--red);font-family:'Fredoka One',cursive">❌</div><div style="margin:12px 0 8px;font-size:1.2rem">No lograste desbloquear suficientes pistas para resolver la noticia.</div><div style="color:#a78bfa;font-size:1.1rem">Intenta de nuevo.</div>`;
+  }
+  setTimeout(()=>{
+    document.body.innerHTML = `<div style='display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;background:var(--bg);'>${msg}<br><button class='btn btn-primary' onclick='location.reload()'>Volver a jugar</button></div>`;
+  }, 1200);
 }
 function resetVF(){
   document.getElementById('vf-btns').classList.remove('hidden');
@@ -551,7 +576,8 @@ function rClick(){
       }
     }
   }
-const SI_E=['🟣','🔵','🟢','🟡'];
+const SI_E=['🟣','🔵','🟢','🟡','🔴','🟠','🟤','⚪'];
+const SI_C=['#9333EA','#3B82F6','#10B981','#FCD34D','#EF4444','#FB923C','#A16207','#F3F4F6'];
 let siS={};
 function buildSimon(){
   document.getElementById('mg-area').innerHTML=`
@@ -576,7 +602,7 @@ function siStart(){
   siS={seq:[],usr:[],lvl:0,lock:true};siNext();
 }
 function siNext(){
-  siS.seq.push(Math.floor(Math.random()*4));siS.usr=[];siS.lvl++;siS.lock=true;
+  siS.seq.push(Math.floor(Math.random()*SI_C.length));siS.usr=[];siS.lvl++;siS.lock=true;
   document.getElementById('si-r').textContent=siS.lvl;
   document.getElementById('si-st').textContent='👀 Memoriza…';
   let i=0;
