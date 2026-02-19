@@ -715,8 +715,32 @@ function wSubmit(){
   wS.att.push(val);inp.value='';
   document.getElementById('wg').innerHTML=wRender();
   document.getElementById('w-left').textContent=4-wS.att.length;
-  if(val===WW){msg.innerHTML='<span style="color:var(--green)">🎉 ¡Correcto! Era SUEÑO.</span>';_t(winClue,900);return;}
-  if(wS.att.length>=4){msg.innerHTML=`<span style="color:var(--red)">😵 Era <strong>${WW}</strong>. Pista perdida.</span>`;_t(()=>{loseClue();},2000);return;}
+  if(val===WW){
+    msg.innerHTML='<span style="color:var(--green)">🎉 ¡Correcto! Era SUEÑO.</span>';
+    wS.solved=true;
+    _t(winClue,900);
+    return;
+  }
+  if(wS.att.length>=4){
+    // Contar intentos correctos (al menos 3 de 4 con 3+ letras en posición exacta)
+    let correctTries = 0;
+    for(let i=0;i<wS.att.length;i++){
+      const attempt=wS.att[i];
+      if(attempt && attempt.length===5){
+        const ok=attempt.split('').filter((ch,j)=>ch===WW[j]).length;
+        if(ok>=3) correctTries++;
+      }
+    }
+    if(correctTries>=3){
+      msg.innerHTML='<span style="color:var(--green)">🎉 ¡Bien! Acertaste la mayoría de las palabras.</span>';
+      wS.solved=true;
+      _t(winClue,1200);
+    }else{
+      msg.innerHTML=`<span style="color:var(--red)">😵 Era <strong>${WW}</strong>. Pista perdida.</span>`;
+      _t(()=>{loseClue();},2000);
+    }
+    return;
+  }
   const ok=val.split('').filter((ch,i)=>ch===WW[i]).length;
   msg.innerHTML=`<span style="color:var(--yellow)">${ok} letra(s) en posición exacta 🟩</span>`;
 }
