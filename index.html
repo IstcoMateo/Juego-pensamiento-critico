@@ -68,7 +68,639 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:#fff;min-height:
 .eff:last-child{border-bottom:none;}
 
 /* ===== VERDADERO / FALSO ===== */
+
 </head>
 <body>
+<div class="bg"></div>
+<script>
+for(let i=0;i<50;i++){
+  const s=document.createElement('div');
+  const sz=Math.random()*2.5+1;
+  s.setAttribute('aria-hidden','true');
+  s.style.cssText=`position:fixed;border-radius:50%;background:#fff;pointer-events:none;z-index:0;
+  width:${sz}px;height:${sz}px;left:${Math.random()*100}vw;top:${Math.random()*100}vh;
+  animation:float ${2+Math.random()*4}s ease-in-out infinite;animation-delay:${Math.random()*4}s;
+  opacity:${Math.random()*.6+.15}`;
+  document.body.appendChild(s);
+}
+</script>
+
+<div class="wrap">
+
+  <!-- HEADER -->
+  <div class="hdr">
+    <span class="hdr-icon">🧠</span>
+    <h1>El Reinicio Cerebral</h1>
+    <p>Lee la noticia · ¿Verdadera o Falsa? · Desbloquea las pistas</p>
+  </div>
+
+  <!-- ══════════════ NOTICIA ══════════════ -->
+  <div class="sec-title">📰 La Noticia <div class="sec-line"></div></div>
+
+  <div class="news-card">
+    <div class="news-badge">🔬 Neurociencia · Investigación Internacional</div>
+    <h2 class="news-title">Científicos descubren que el cerebro humano puede "reiniciarse" durante el sueño profundo</h2>
+    <figure class="news-img" role="img" aria-label="Ilustración de un cerebro dormido">
+      <div aria-hidden="true">🧠 💤</div>
+      <figcaption class="hidden">Ilustración de un cerebro dormido</figcaption>
+    </figure>
+
+    <p class="news-p">Un equipo internacional de neurocientíficos afirmó haber identificado un proceso cerebral al que denominaron <strong style="color:var(--cyan)">"reinicio sináptico nocturno"</strong>, mediante el cual el cerebro reorganizaría sus conexiones neuronales mientras dormimos.</p>
+
+    <p class="news-p">El estudio habría sido desarrollado por el <strong style="color:var(--purple)">Instituto Europeo de Neurotecnología Aplicada</strong>, donde los investigadores utilizaron <strong style="color:var(--cyan)">resonancias magnéticas funcionales</strong> para analizar la actividad cerebral de varios voluntarios durante distintas fases del sueño.</p>
+
+    <p class="news-p">Según el informe, durante el sueño profundo algunas conexiones neuronales reducirían temporalmente su actividad, permitiendo que otras rutas se fortalezcan. Este mecanismo ayudaría al cerebro a <strong style="color:var(--green)">optimizar la memoria, mejorar el aprendizaje y favorecer la creatividad.</strong></p>
+
+    <div class="quote">
+      "El cerebro no solo descansa mientras dormimos; también ejecuta un proceso de mantenimiento similar al reinicio de un sistema informático, eliminando información irrelevante y fortaleciendo los recuerdos importantes."
+      <cite>— Dra. Elisa Hartmann, Neurobióloga · Directora del Proyecto</cite>
+    </div>
+
+    <p class="news-p">Los investigadores señalaron que dormir <strong style="color:var(--red)">menos de seis horas</strong> podría interrumpir este reinicio cerebral, causando:</p>
+
+    <div class="effects">
+      <h4>⚠️ Consecuencias del sueño insuficiente</h4>
+      <div class="eff">😵 Menor concentración</div>
+      <div class="eff">🤔 Peor toma de decisiones</div>
+      <div class="eff">📉 Reducción del rendimiento académico</div>
+      <div class="eff">🧩 Dificultades para resolver problemas</div>
+    </div>
+
+    <p class="news-p">El hallazgo generó interés entre especialistas del sueño, aunque algunos expertos recomendaron realizar más estudios antes de confirmar el fenómeno.</p>
+  </div>
+
+  <!-- ══════════════ VERDADERO / FALSO ══════════════ -->
+  <div class="sec-title">⚖️ ¿Es Verdadera o Falsa? <div class="sec-line"></div></div>
+
+  <div class="vf-card" id="vf-card">
+    <p class="vf-question">Después de leer la noticia, ¿qué piensas?<br>¿Crees que esta información es <strong style="color:var(--green)">verdadera</strong> o <strong style="color:var(--red)">falsa</strong>?</p>
+    <div class="vf-btns" id="vf-btns">
+      <button class="vfbtn vfbtn-v" onclick="elegir('verdadero')">✅ VERDADERA</button>
+      <button class="vfbtn vfbtn-f" onclick="elegir('falso')">❌ FALSA</button>
+    </div>
+
+    <!-- Resultado verdadero -->
+    <div class="vf-result verdadero" id="res-verdadero" role="status" aria-live="polite">
+      <span class="vfr-icon">🟡</span>
+      <div class="vfr-title" style="color:var(--yellow)">¡Elegiste VERDADERA!</div>
+      <p class="vfr-text">Elegiste bien en cuanto a los conceptos científicos. El sueño sí reorganiza conexiones neuronales y la ciencia estudia activamente estos procesos. Sin embargo, algunos detalles de esta noticia no se pueden verificar completamente.</p>
+      <div class="vf-note">
+        ⚠️ <strong>¡Ojo!</strong> El "Instituto Europeo de Neurotecnología Aplicada" y la "Dra. Elisa Hartmann" no aparecen en registros científicos verificables. Los conceptos sobre el sueño son reales, pero los detalles específicos de esta investigación no están confirmados. <br><br>
+        🔍 <strong>Desbloquea las 5 pistas de abajo para descubrir más detalles.</strong>
+      </div>
+      <button class="btn-retry" onclick="resetVF()">🔄 Cambiar respuesta</button>
+    </div>
+
+    <!-- Resultado falso -->
+    <div class="vf-result falso" id="res-falso" role="status" aria-live="polite">
+      <span class="vfr-icon">🟡</span>
+      <div class="vfr-title" style="color:var(--yellow)">¡Elegiste FALSA!</div>
+      <p class="vfr-text">Buen olfato crítico. Algunos elementos de esta noticia no se pueden verificar. Pero no todo es inventado: la neurociencia del sueño es una ciencia real y sí estudia cómo el cerebro procesa información mientras dormimos.</p>
+      <div class="vf-note">
+        🧪 <strong>La realidad:</strong> Los efectos del sueño descritos tienen respaldo científico real. Lo que no se puede verificar es el instituto y la investigadora mencionados. Es una noticia que mezcla ciencia real con datos no confirmados. <br><br>
+        🔍 <strong>Desbloquea las 5 pistas de abajo para descubrir todos los detalles.</strong>
+      </div>
+      <button class="btn-retry" onclick="resetVF()">🔄 Cambiar respuesta</button>
+    </div>
+  </div>
+
+  <!-- ══════════════ PISTAS ══════════════ -->
+  <div class="sec-title">🔑 Las 5 Pistas <div class="sec-line"></div></div>
+
+  <div class="clues-card">
+    <p class="clues-intro">Cada pista está bloqueada. Haz clic en <strong style="color:var(--yellow)">▶ Jugar</strong> y gana el mini-juego para desbloquearla.</p>
+    <div class="prog-row">
+      <div class="prog-bar"><div class="prog-fill" id="prog" style="width:0%"></div></div>
+      <div class="prog-lbl" id="prog-lbl">0/5</div>
+    </div>
+    <div id="clues-list"></div>
+  </div>
+
+</div><!-- /wrap -->
+
+<!-- OVERLAY MINI-JUEGO -->
+<div class="overlay hidden" id="overlay">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕ Cerrar</button>
+    <div id="mg-area"></div>
+  </div>
+</div>
+
+<script>
+// ───────────────────────────────────────────
+//  DATA
+// ───────────────────────────────────────────
+const CLUES=[
+  {num:'P1',icon:'🔬',text:'Neurocientíficos investigaron qué ocurre en el cerebro mientras las personas duermen.',game:'reaction'},
+  {num:'P2',icon:'⚡',text:'Se usó tecnología avanzada para observar la actividad neuronal durante el sueño profundo.',game:'simon'},
+  {num:'P3',icon:'🏛️',text:'La investigación se realizó en el Instituto Europeo de Neurotecnología Aplicada.',game:'math'},
+  {num:'P4',icon:'💡',text:'Denominaron a este fenómeno "reinicio sináptico nocturno".',game:'word'},
+  {num:'P5',icon:'🌙',text:'Creen que el cerebro reorganiza la información aprendida durante el día.',game:'spinner'},
+];
+
+let earned=[];
+let failed=[];
+let activeCl=-1;
+
+// ───────────────────────────────────────────
+//  VERDADERO / FALSO
+// ───────────────────────────────────────────
+function elegir(op){
+  document.getElementById('vf-btns').classList.add('hidden');
+  document.getElementById('res-verdadero').classList.remove('show');
+  document.getElementById('res-falso').classList.remove('show');
+  document.getElementById('res-'+op).classList.add('show');
+  spawnConfetti(30);
+  // Guardar respuesta y permitir mostrar resultado final
+  window.vfRespuesta = op;
+  setTimeout(()=>{
+    if((earned.length+1-failed.length)>=4){ // 4 o más pistas ganadas
+      mostrarResultadoFinal();
+    }
+  }, 2000);
+}
+
+function mostrarResultadoFinal(){
+  // La noticia es VERDADERA
+  const correcta = 'verdadero';
+  let acierto = (window.vfRespuesta === correcta);
+  let pistas = earned.length+1-failed.length;
+  let msg = '';
+  if(pistas>=4 && acierto){
+    msg = `<div style="font-size:2.2rem;color:var(--green);font-family:'Fredoka One',cursive">🎉 ¡FELICITACIONES!</div><div style="margin:12px 0 8px;font-size:1.2rem">Acertaste la noticia y desbloqueaste <b>${pistas}</b> pistas.</div><div style="color:#a78bfa;font-size:1.1rem">¡Eres un gran pensador crítico!</div>`;
+  }else if(pistas>=4 && !acierto){
+    msg = `<div style="font-size:2.2rem;color:var(--yellow);font-family:'Fredoka One',cursive">🧐 Casi...</div><div style="margin:12px 0 8px;font-size:1.2rem">Desbloqueaste <b>${pistas}</b> pistas, pero tu respuesta final no fue correcta.</div><div style="color:#a78bfa;font-size:1.1rem">¡Sigue practicando!</div>`;
+  }else{
+    msg = `<div style="font-size:2.2rem;color:var(--red);font-family:'Fredoka One',cursive">❌</div><div style="margin:12px 0 8px;font-size:1.2rem">No lograste desbloquear suficientes pistas para resolver la noticia.</div><div style="color:#a78bfa;font-size:1.1rem">Intenta de nuevo.</div>`;
+  }
+  setTimeout(()=>{
+    document.body.innerHTML = `<div style='display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;background:var(--bg);'>${msg}<br><button class='btn btn-primary' onclick='location.reload()'>Volver a jugar</button></div>`;
+  }, 1200);
+}
+function resetVF(){
+  document.getElementById('vf-btns').classList.remove('hidden');
+  document.getElementById('res-verdadero').classList.remove('show');
+  document.getElementById('res-falso').classList.remove('show');
+}
+
+// ───────────────────────────────────────────
+//  CLUES LIST
+// ───────────────────────────────────────────
+function renderClues(){
+  document.getElementById('prog').style.width=(earned.length/5*100)+'%';
+  document.getElementById('prog-lbl').textContent=earned.length+'/5';
+  document.getElementById('clues-list').innerHTML=CLUES.map((c,i)=>{
+    let state = earned.includes(i) ? 'earned' : failed.includes(i) ? 'failed' : '';
+    let right = '';
+    if (earned.includes(i)) right = '<span class="earned-tag">✅</span>';
+    else if (failed.includes(i)) right = '<span class="earned-tag" style="color:var(--red)">❌ Pista perdida</span>';
+    else right = `<button class="play-btn" onclick="openGame(${i})">▶ Jugar</button>`;
+    return `<div class="clue-item ${state}">
+      <div class="ci-icon">${c.icon}</div>
+      <div class="ci-body">
+        <div class="ci-num">${c.num}</div>
+        <div class="ci-text ${earned.includes(i)?'':'blur'}">${c.text}</div>
+      </div>
+      <div class="ci-right">${right}</div>
+    </div>`;
+  }).join('');
+}
+renderClues();
+
+// ───────────────────────────────────────────
+//  MODAL
+// ───────────────────────────────────────────
+function openGame(i){
+  if (earned.includes(i) || failed.includes(i)) return;
+  activeCl=i;
+  clearTmr();
+  document.getElementById('overlay').classList.remove('hidden');
+  const fns={reaction:buildReaction,simon:buildSimon,math:buildMath,word:buildWord,spinner:buildSpinner};
+  document.getElementById('mg-area').innerHTML='';
+  fns[CLUES[i].game]();
+}
+function closeModal(){
+  document.getElementById('overlay').classList.add('hidden');
+  clearTmr();
+  renderClues();
+}
+
+// timers
+let _tmr=[];
+function _t(f,ms){const id=setTimeout(f,ms);_tmr.push(id);return id;}
+function _i(f,ms){const id=setInterval(f,ms);_tmr.push(id);return id;}
+function clearTmr(){_tmr.forEach(id=>{clearTimeout(id);clearInterval(id);});_tmr=[];}
+
+// cleanup timers on unload
+window.addEventListener('beforeunload',()=>clearTmr());
+
+function winClue(){
+  clearTmr();
+  if(!earned.includes(activeCl)) earned.push(activeCl);
+  const c=CLUES[activeCl];
+  spawnConfetti(70);
+  document.getElementById('mg-area').innerHTML=`
+    <div class="win-box">
+      <div style="font-size:58px;animation:bounce 1s infinite">🎉</div>
+      <h3>¡Pista Desbloqueada!</h3>
+      <div class="clue-reveal">
+        <div class="cr-label">${c.num} ${c.icon}</div>
+        <div class="cr-text">${c.text}</div>
+      </div>
+      <div class="center mt"><button class="btn btn-green" onclick="closeModal()">✅ Cerrar</button></div>
+    </div>`;
+}
+
+function loseClue(){
+  clearTmr();
+  if(!failed.includes(activeCl)) failed.push(activeCl);
+  const c=CLUES[activeCl];
+  document.getElementById('mg-area').innerHTML=`
+    <div class="win-box" style="border-color:var(--red);background:rgba(239,68,68,.08)">
+      <div style="font-size:58px;animation:bounce 1s infinite;color:var(--red)">❌</div>
+      <h3 style="color:var(--red)">Pista perdida</h3>
+      <div class="clue-reveal">
+        <div class="cr-label">${c.num} ${c.icon}</div>
+        <div class="cr-text">No podrás volver a intentarlo.</div>
+      </div>
+      <div class="center mt"><button class="btn btn-danger" onclick="closeModal()">Cerrar</button></div>
+    </div>`;
+}
+
+// ═══════════════════════════════════════════
+//  JUEGO 1 — REACCIÓN (P1)
+// ═══════════════════════════════════════════
+let rS = {};
+let rAttempts = 3;
+function buildReaction() {
+  document.getElementById('mg-area').innerHTML = `
+    <div class="mg-title">⚡ Juego de Reacción</div>
+    <div class="mg-desc">Haz clic SOLO cuando se ponga en <strong style="color:var(--green)">VERDE</strong>.<br>
+    Si haces clic antes → racha perdida. Necesitas <strong style="color:var(--yellow)">3 aciertos seguidos</strong> en menos de 500ms.<br><span style="color:var(--red);font-weight:800">Tienes <strong>3 intentos</strong> para desbloquear esta pista.</span></div>
+    <div class="rstats">
+      <div class="rpill">✅ Racha: <strong id="r-st" style="color:var(--green)">0</strong>/3</div>
+      <div class="rpill">❌ Fallos: <strong id="r-fa" style="color:var(--pink)">0</strong></div>
+    </div>
+    <div class="rbox" id="rbox" onclick="rClick()">
+      <span style="font-size:3rem" id="r-em">👆</span>
+      <span style="font-family:'Fredoka One',cursive;font-size:1.05rem" id="r-lb">Haz clic para comenzar</span>
+    </div>
+    <div style="text-align:center;font-family:'Fredoka One',cursive;font-size:1.5rem;color:var(--yellow);margin:10px 0;min-height:34px" id="r-ms"></div>`;
+  rS = { phase: 'idle', streak: 0, fails: 0, timeout: null, failFlag: false };
+}
+function rClick() {
+  if (rS.failFlag) return;
+  const box = document.getElementById('rbox');
+  const lb = document.getElementById('r-lb');
+  const em = document.getElementById('r-em');
+  const ms = document.getElementById('r-ms');
+  if (!box) return;
+  if (rS.phase === 'idle') {
+    rS.phase = 'wait'; box.className = 'rbox wait';
+    em.textContent = '⏳'; lb.textContent = 'Espera al verde…'; ms.textContent = '';
+    rS.timeout = _t(() => {
+      rS.phase = 'go'; rS.t0 = performance.now();
+      box.className = 'rbox go'; em.textContent = '🟢'; lb.textContent = '¡AHORA!';
+      rS.timeout = _t(() => {
+        rS.phase = 'idle'; rS.streak = 0;
+        box.className = 'rbox'; em.textContent = '😴'; lb.textContent = 'Muy lento.';
+        ms.innerHTML = '<span style="color:var(--red)">Tiempo agotado ❌</span>';
+        document.getElementById('r-st').textContent = 0;
+        rAttempts--;
+        if (rAttempts > 0) {
+          lb.textContent = `Te quedan ${rAttempts} intento(s). Haz clic para reintentar.`;
+          rS.failFlag = false;
+        } else {
+          lb.textContent = 'Sin más intentos.';
+          rS.failFlag = true; _t(loseClue, 1200);
+        }
+      }, 1200);
+    }, 1500 + Math.random() * 3500);
+  } else if (rS.phase === 'wait') {
+    clearTimeout(rS.timeout);
+    rS.phase = 'idle'; rS.streak = 0; rS.fails++;
+    box.className = 'rbox early'; em.textContent = '💔';
+    lb.textContent = '¡Demasiado pronto!';
+    ms.innerHTML = '<span style="color:var(--red)">Racha perdida ❌</span>';
+    document.getElementById('r-st').textContent = 0;
+    document.getElementById('r-fa').textContent = rS.fails;
+    rAttempts--;
+    if (rAttempts > 0) {
+      lb.textContent = `Te quedan ${rAttempts} intento(s). Haz clic para reintentar.`;
+      rS.failFlag = false;
+    } else {
+      lb.textContent = 'Sin más intentos.';
+      rS.failFlag = true; _t(loseClue, 1200);
+    }
+  } else if (rS.phase === 'go') {
+    clearTimeout(rS.timeout);
+    const t = Math.round(performance.now() - rS.t0);
+    rS.phase = 'idle';
+    if (t < 500) {
+      rS.streak++;
+      document.getElementById('r-st').textContent = rS.streak;
+      ms.innerHTML = `<span style="color:var(--green)">${t}ms ✅</span>`;
+      box.className = 'rbox'; em.textContent = '⚡';
+      lb.textContent = rS.streak >= 3 ? '🎉 ¡Ganaste!' : `¡Bien! (${rS.streak}/3) Clic para continuar.`;
+      if (rS.streak >= 3) { _t(winClue, 700); return; }
+    } else {
+      rS.streak = 0; rS.fails++;
+      ms.innerHTML = `<span style="color:var(--red)">${t}ms — muy lento ❌</span>`;
+      box.className = 'rbox'; em.textContent = '🐌'; lb.textContent = 'Demasiado lento.';
+      document.getElementById('r-st').textContent = 0;
+      document.getElementById('r-fa').textContent = rS.fails;
+      rAttempts--;
+      if (rAttempts > 0) {
+        lb.textContent = `Te quedan ${rAttempts} intento(s). Haz clic para reintentar.`;
+        rS.failFlag = false;
+      } else {
+        lb.textContent = 'Sin más intentos.';
+        rS.failFlag = true; _t(loseClue, 1200);
+      }
+    }
+  }
+}
+const SI_E=['🟣','🔵','🟢','🟡','🔴','🟠','🟤','⚪'];
+const SI_C=['#9333EA','#3B82F6','#10B981','#FCD34D','#EF4444','#FB923C','#A16207','#F3F4F6'];
+let siS={};
+function buildSimon(){
+  document.getElementById('mg-area').innerHTML=`
+    <div class="mg-title">🟦 Simon Says</div>
+    <div class="mg-desc">Memoriza y repite la secuencia de colores.<br>
+    Llega a <strong style="color:var(--yellow)">ronda 5</strong> para ganar. ¡Un error reinicia todo desde ronda 1!</div>
+    <div style="text-align:center;font-family:'Fredoka One',cursive;font-size:1.15rem;color:var(--yellow);margin:4px 0">Ronda: <span id="si-r">—</span>/5</div>
+    <div style="text-align:center;color:#a78bfa;font-weight:800;font-size:.88rem;margin:6px 0" id="si-st">Presiona Iniciar</div>
+    <div class="si-grid" id="si-g"></div>
+    <div class="center"><button class="btn btn-primary" id="si-go" onclick="siStart()">▶ Iniciar</button></div>`;
+  const g=document.getElementById('si-g');
+  SI_C.forEach((c,i)=>{
+    const b=document.createElement('div');b.className='si-btn';b.id='si-b'+i;
+    b.style.cssText=`background:${c}44;border-color:${c};`;
+    b.innerHTML=`<span style="font-size:1.9rem">${SI_E[i]}</span>`;
+    b.onclick=()=>siPress(i);g.appendChild(b);
+  });
+  siS={seq:[],usr:[],lvl:0,lock:true};
+}
+function siStart(){
+  document.getElementById('si-go').classList.add('hidden');
+  siS={seq:[],usr:[],lvl:0,lock:true};siNext();
+}
+function siNext(){
+  siS.seq.push(Math.floor(Math.random()*SI_C.length));siS.usr=[];siS.lvl++;siS.lock=true;
+  document.getElementById('si-r').textContent=siS.lvl;
+  document.getElementById('si-st').textContent='👀 Memoriza…';
+  let i=0;
+  function show(){
+    if(i>=siS.seq.length){siS.lock=false;document.getElementById('si-st').textContent='🖐 ¡Tu turno!';return;}
+    const idx=siS.seq[i];const b=document.getElementById('si-b'+idx);
+    _t(()=>{b.classList.add('lit');b.style.background=SI_C[idx];
+      _t(()=>{b.classList.remove('lit');b.style.background=SI_C[idx]+'44';i++;_t(show,300);},500);
+    },100);
+  }
+  _t(show,700);
+}
+function siPress(idx){
+  if(siS.lock)return;
+  const b=document.getElementById('si-b'+idx);
+  b.classList.add('lit');b.style.background=SI_C[idx];
+  _t(()=>{b.classList.remove('lit');b.style.background=SI_C[idx]+'44';},200);
+  siS.usr.push(idx);
+  const pos=siS.usr.length-1;
+  if(siS.usr[pos]!==siS.seq[pos]){
+    siS.lock=true;
+    document.getElementById('si-st').textContent='❌ ¡Error! Reiniciando…';
+    document.getElementById('si-r').textContent='—';
+    _t(()=>{siS={seq:[],usr:[],lvl:0,lock:true};
+      document.getElementById('si-go').classList.remove('hidden');
+      document.getElementById('si-st').textContent='Presiona Iniciar para reintentar';
+    },1500);return;
+  }
+  if(siS.usr.length===siS.seq.length){
+    siS.lock=true;
+    if(siS.lvl>=5){document.getElementById('si-st').textContent='🎉 ¡Ganaste!';_t(winClue,800);}
+    else{document.getElementById('si-st').textContent='✅ ¡Correcto!';_t(siNext,900);}
+  }
+}
+
+// ═══════════════════════════════════════════
+//  JUEGO 3 — MATEMÁTICAS (P3)
+// ═══════════════════════════════════════════
+let mS={};
+function buildMath(){
+  document.getElementById('mg-area').innerHTML=`
+    <div class="mg-title">🔢 Reto Matemático</div>
+    <div class="mg-desc">Resuelve <strong style="color:var(--yellow)">5 operaciones SEGUIDAS</strong> sin un solo error.<br>
+    Cada fallo reinicia la racha. Tienes <strong style="color:var(--red)">3 vidas</strong> totales.</div>
+    <div class="info-row">
+      <div class="info-pill">🎯 Racha: <strong id="m-s" style="color:var(--green)">0</strong>/5</div>
+      <div class="info-pill">❤️ Vidas: <strong id="m-l" style="color:var(--red)">3</strong></div>
+    </div>
+    <div class="math-eq" id="m-eq">¿Listo?</div>
+    <div class="math-grid" id="m-g"></div>
+    <p id="m-fb" style="text-align:center;font-weight:800;min-height:22px;font-size:.9rem"></p>
+    <div class="center"><button class="btn btn-primary" id="m-go" onclick="mStart()">▶ Comenzar</button></div>`;
+  mS={streak:0,lives:3};
+}
+function mStart(){document.getElementById('m-go').classList.add('hidden');mNext();}
+function mNext(){
+  const ops=['+','-','×'];const op=ops[Math.floor(Math.random()*ops.length)];
+  let a,b,ans;
+  if(op==='+'){a=15+Math.floor(Math.random()*85);b=15+Math.floor(Math.random()*85);ans=a+b;}
+  else if(op==='-'){a=30+Math.floor(Math.random()*70);b=10+Math.floor(Math.random()*40);ans=a-b;}
+  else{a=3+Math.floor(Math.random()*12);b=3+Math.floor(Math.random()*12);ans=a*b;}
+  document.getElementById('m-eq').textContent=`${a} ${op} ${b} = ?`;
+  document.getElementById('m-fb').textContent='';
+  const set=new Set([ans]);
+  while(set.size<4){const f=ans+Math.floor(Math.random()*30)-15;if(f!==ans&&f>0)set.add(f);}
+  document.getElementById('m-g').innerHTML=[...set].sort(()=>Math.random()-.5)
+    .map(o=>`<div class="mopt" onclick="mAns(this,${o},${ans})">${o}</div>`).join('');
+}
+function mAns(el,chosen,correct){
+  document.querySelectorAll('.mopt').forEach(o=>o.onclick=null);
+  if(chosen===correct){
+    el.classList.add('right');mS.streak++;
+    document.getElementById('m-s').textContent=mS.streak;
+    document.getElementById('m-fb').innerHTML=`<span style="color:var(--green)">✅ ¡Correcto! (${mS.streak}/5)</span>`;
+    if(mS.streak>=5){_t(winClue,700);return;}
+    _t(mNext,900);
+  } else {
+    el.classList.add('wrong');
+    document.querySelectorAll('.mopt').forEach(o=>{if(+o.textContent===correct)o.classList.add('right');});
+    mS.streak=0;mS.lives--;
+    document.getElementById('m-s').textContent=0;
+    document.getElementById('m-l').textContent=mS.lives;
+    document.getElementById('m-fb').innerHTML=`<span style="color:var(--red)">❌ Era ${correct}. Racha a 0.</span>`;
+    if(mS.lives<=0){_t(()=>{buildMath();},1500);return;}
+    _t(mNext,1200);
+  }
+}
+
+// ═══════════════════════════════════════════
+//  JUEGO 4 — ADIVINA LA PALABRA (P4)
+// ═══════════════════════════════════════════
+const WW = 'SUENO';
+let wS = {};
+function buildWord() {
+  wS = { att: [], max: 3 };
+  document.getElementById('mg-area').innerHTML = `
+    <div class="mg-title">🔤 Adivina la Palabra</div>
+    <div class="mg-desc"><strong style="color:var(--yellow)">3 intentos</strong> para adivinar la palabra de 5 letras.<br>
+    🟩 posición correcta &nbsp; 🟨 letra existe &nbsp; ⬛ no existe</div>
+    <div class="word-hint">💡 Pista: Proceso que hace el cerebro por las noches (5 letras, sin tilde)</div>
+    <div class="wgrid" id="wg">${wRender()}</div>
+    <div style="text-align:center;color:#a78bfa;font-size:.8rem;font-weight:800;margin:5px 0">
+      Intentos restantes: <strong id="w-left" style="color:var(--yellow)">3</strong>
+    </div>
+    <div class="winp-row">
+      <input class="winp" id="winp" maxlength="5" placeholder="XXXXX" autocomplete="off" spellcheck="false">
+      <button class="btn btn-primary" onclick="wSubmit()">↩</button>
+    </div>
+    <p id="w-msg" style="text-align:center;font-weight:800;min-height:22px;font-size:.88rem;margin-top:6px"></p>`;
+  document.getElementById('winp').addEventListener('keydown', e => { if (e.key === 'Enter') wSubmit(); });
+}
+function wRender() {
+  let h = '';
+  for (let r = 0; r < 3; r++) {
+    h += '<div class="wrow">';
+    for (let c = 0; c < 5; c++) {
+      let cls = 'wcell', lt = '';
+      if (wS.att[r]) {
+        lt = wS.att[r][c] || '';
+        if (wS.att[r][c] === WW[c]) cls += ' c';
+        else if (WW.includes(wS.att[r][c])) cls += ' p';
+        else cls += ' a';
+      } else if (r === wS.att.length) cls += ' cur';
+      h += `<div class="${cls}">${lt}</div>`;
+    }
+    h += '</div>';
+  }
+  return h;
+}
+function wSubmit() {
+  const inp = document.getElementById('winp');
+  const val = inp.value.toUpperCase().replace(/[ÑÚÉÁÍÓüéáíóú]/g, c => ({ Ñ: 'N', Ú: 'U', É: 'E', Á: 'A', Í: 'I', Ó: 'O' }[c] || c)).trim();
+  const msg = document.getElementById('w-msg');
+  if (val.length !== 5) { msg.innerHTML = '<span style="color:var(--red)">Necesitas exactamente 5 letras.</span>'; return; }
+  wS.att.push(val); inp.value = '';
+  document.getElementById('wg').innerHTML = wRender();
+  document.getElementById('w-left').textContent = 3 - wS.att.length;
+  if (val === WW) {
+    msg.innerHTML = '<span style="color:var(--green)">🎉 ¡Correcto! Era SUEÑO.</span>';
+    wS.solved = true;
+    _t(winClue, 900);
+    return;
+  }
+  if (wS.att.length >= 3) {
+    // Si acertó la palabra, gana la pista
+    if (wS.solved) {
+      return;
+    }
+    // Si no acertó, pierde la pista
+    msg.innerHTML = `<span style="color:var(--red)">😵 Era <strong>${WW}</strong>. Pista perdida.</span>`;
+    _t(() => { loseClue(); }, 2000);
+    return;
+  }
+  const ok = val.split('').filter((ch, i) => ch === WW[i]).length;
+  msg.innerHTML = `<span style="color:var(--yellow)">${ok} letra(s) en posición exacta 🟩</span>`;
+}
+
+// ═══════════════════════════════════════════
+//  JUEGO 5 — RULETA (P5)
+// ═══════════════════════════════════════════
+const SP=[
+  {c:'#9333EA',l:'🔑 PISTA',w:true},{c:'#EF4444',l:'❌ NOPE',w:false},
+  {c:'#22D3EE',l:'🔑 PISTA',w:true},{c:'#F59E0B',l:'❌ NOPE',w:false},
+  {c:'#10B981',l:'🔑 PISTA',w:true},{c:'#F97316',l:'❌ NOPE',w:false},
+  {c:'#3B82F6',l:'🔑 PISTA',w:true},{c:'#BE185D',l:'❌ NOPE',w:false},
+];
+let spS={rot:0,spin:false,att:0,streak:0,failFlag:false};
+function buildSpinner(){
+  spS={rot:0,spin:false,att:0,streak:0,failFlag:false};
+  document.getElementById('mg-area').innerHTML=`
+    <div class="mg-title">🎰 Ruleta de la Suerte</div>
+    <div class="mg-desc">Gira la ruleta. Debes ganar <strong style="color:var(--yellow)">3 veces</strong> para desbloquear la pista.<br>
+    La probabilidad de ganar es baja. Si fallas una vez, pierdes la pista.</div>
+    <div class="spin-wrap">
+      <div class="spin-cw">
+        <div class="sp-arrow"></div>
+        <canvas id="sp-cv" width="250" height="250" style="border-radius:50%;display:block;"></canvas>
+        <div class="sp-center"></div>
+      </div>
+      <div style="color:#a78bfa;font-size:.8rem;font-weight:800;margin:8px 0">
+        Giros usados: <strong id="sp-att" style="color:var(--yellow)">0</strong>/∞
+        &nbsp;|&nbsp; Racha: <strong id="sp-streak" style="color:var(--green)">0</strong>/3
+      </div>
+      <div style="font-family:'Fredoka One',cursive;font-size:1.2rem;min-height:30px;margin:6px 0" id="sp-res"></div>
+      <button class="btn btn-yellow" id="sp-btn" onclick="spSpin()" style="font-size:1.05rem;padding:13px 30px">🎰 ¡Girar!</button>
+    </div>`;
+  spDraw(0);
+}
+function spDraw(rot){
+  const cv=document.getElementById('sp-cv');if(!cv)return;
+  const ctx=cv.getContext('2d'),cx=125,cy=125,r=122;
+  const arc=(Math.PI*2)/SP.length;
+  ctx.clearRect(0,0,250,250);
+  SP.forEach((s,i)=>{
+    const a=rot+arc*i-Math.PI/2,b=a+arc;
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,a,b);
+    ctx.fillStyle=s.c;ctx.fill();ctx.strokeStyle='#07041A';ctx.lineWidth=3;ctx.stroke();
+    ctx.save();ctx.translate(cx,cy);ctx.rotate(a+arc/2);
+    ctx.textAlign='right';ctx.fillStyle='#fff';ctx.font='bold 10px Nunito';
+    ctx.fillText(s.l,r-8,4);ctx.restore();
+  });
+  ctx.beginPath();ctx.arc(cx,cy,14,0,Math.PI*2);
+  ctx.fillStyle='#07041A';ctx.fill();ctx.strokeStyle='#FCD34D';ctx.lineWidth=3;ctx.stroke();
+}
+function spSpin(){
+  if(spS.spin||spS.failFlag)return;
+  spS.spin=true;document.getElementById('sp-btn').disabled=true;
+  spS.att++;document.getElementById('sp-att').textContent=spS.att;
+  const win=Math.random()<0.18; // baja probabilidad
+  const arc=(Math.PI*2)/SP.length;
+  const spins=(4+Math.floor(Math.random()*4))*Math.PI*2;
+  const winI=[0,2,4,6],loseI=[1,3,5,7];
+  const tIdx=(win?winI:loseI)[Math.floor(Math.random()*4)];
+  const tAngle=arc*tIdx+arc/2;
+  const add=spins+(Math.PI*2-((spS.rot+tAngle)%(Math.PI*2))+(Math.PI*2))%(Math.PI*2);
+  const finalR=spS.rot+add;
+  const dur=3500,t0=performance.now(),r0=spS.rot;
+  function anim(now){
+    const el=Math.min((now-t0)/dur,1);
+    const ease=1-Math.pow(1-el,4);
+    spDraw(r0+(finalR-r0)*ease);
+    if(el<1){requestAnimationFrame(anim);return;}
+    spS.rot=finalR%(Math.PI*2);spS.spin=false;
+    const res=document.getElementById('sp-res');
+    if(win){
+      spS.streak++;
+      document.getElementById('sp-streak').textContent=spS.streak;
+      res.innerHTML='<span style="color:var(--green)">🎉 ¡PISTA GANADA!</span>';
+      if(spS.streak>=3){_t(winClue,1200);return;}
+      document.getElementById('sp-btn').disabled=false;
+    } else {
+      res.innerHTML='<span style="color:var(--red)">❌ Fallaste. Pista perdida.</span>';
+      spS.failFlag=true;_t(loseClue,1200);
+    }
+  }
+  requestAnimationFrame(anim);
+}
+
+// ───────────────────────────────────────────
+//  CONFETTI
+// ───────────────────────────────────────────
+function spawnConfetti(n=30){
+  const cols=['#9333EA','#22D3EE','#10B981','#FCD34D','#F472B6','#FB923C','#3B82F6'];
+  for(let i=0;i<n;i++){
+    const el=document.createElement('div');el.className='confp';
+    const sz=7+Math.random()*8;
+    el.style.cssText=`left:${Math.random()*100}vw;top:-10px;
+      background:${cols[Math.floor(Math.random()*cols.length)]};
+      width:${sz}px;height:${sz}px;border-radius:${Math.random()>.5?'50%':'3px'};
+      animation-duration:${1.5+Math.random()*2.5}s;animation-delay:${Math.random()*.5}s`;
+    document.body.appendChild(el);
+    el.addEventListener('animationend',()=>el.remove());
+  }
+}
+</script>
 </body>
 </html>
