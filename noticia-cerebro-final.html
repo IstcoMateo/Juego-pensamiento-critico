@@ -372,6 +372,7 @@ const CLUES=[
 ];
 
 let earned=[];
+let failed=[];
 let activeCl=-1;
 
 // ───────────────────────────────────────────
@@ -396,19 +397,21 @@ function resetVF(){
 function renderClues(){
   document.getElementById('prog').style.width=(earned.length/5*100)+'%';
   document.getElementById('prog-lbl').textContent=earned.length+'/5';
-  document.getElementById('clues-list').innerHTML=CLUES.map((c,i)=>`
-    <div class="clue-item ${earned.includes(i)?'earned':''}">
+  document.getElementById('clues-list').innerHTML=CLUES.map((c,i)=>{
+    let state = earned.includes(i) ? 'earned' : failed.includes(i) ? 'failed' : '';
+    let right = '';
+    if (earned.includes(i)) right = '<span class="earned-tag">✅</span>';
+    else if (failed.includes(i)) right = '<span class="earned-tag" style="color:var(--red)">❌ Pista perdida</span>';
+    else right = `<button class="play-btn" onclick="openGame(${i})">▶ Jugar</button>`;
+    return `<div class="clue-item ${state}">
       <div class="ci-icon">${c.icon}</div>
       <div class="ci-body">
         <div class="ci-num">${c.num}</div>
         <div class="ci-text ${earned.includes(i)?'':'blur'}">${c.text}</div>
       </div>
-      <div class="ci-right">
-        ${earned.includes(i)
-          ? '<span class="earned-tag">✅</span>'
-          : `<button class="play-btn" onclick="openGame(${i})">▶ Jugar</button>`}
-      </div>
-    </div>`).join('');
+      <div class="ci-right">${right}</div>
+    </div>`;
+  }).join('');
 }
 renderClues();
 
@@ -416,6 +419,7 @@ renderClues();
 //  MODAL
 // ───────────────────────────────────────────
 function openGame(i){
+  if (earned.includes(i) || failed.includes(i)) return;
   activeCl=i;
   clearTmr();
   document.getElementById('overlay').classList.remove('hidden');
@@ -455,6 +459,22 @@ function winClue(){
     </div>`;
 }
 
+function loseClue(){
+  clearTmr();
+  if(!failed.includes(activeCl)) failed.push(activeCl);
+  const c=CLUES[activeCl];
+  document.getElementById('mg-area').innerHTML=`
+    <div class="win-box" style="border-color:var(--red);background:rgba(239,68,68,.08)">
+      <div style="font-size:58px;animation:bounce 1s infinite;color:var(--red)">❌</div>
+      <h3 style="color:var(--red)">Pista perdida</h3>
+      <div class="clue-reveal">
+        <div class="cr-label">${c.num} ${c.icon}</div>
+        <div class="cr-text">No podrás volver a intentarlo.</div>
+      </div>
+      <div class="center mt"><button class="btn btn-danger" onclick="closeModal()">Cerrar</button></div>
+    </div>`;
+}
+
 // ═══════════════════════════════════════════
 //  JUEGO 1 — REACCIÓN (P1)
 // ═══════════════════════════════════════════
@@ -463,7 +483,7 @@ function buildReaction(){
   document.getElementById('mg-area').innerHTML=`
     <div class="mg-title">⚡ Juego de Reacción</div>
     <div class="mg-desc">Haz clic SOLO cuando se ponga en <strong style="color:var(--green)">VERDE</strong>.<br>
-    Si haces clic antes → racha perdida. Necesitas <strong style="color:var(--yellow)">3 aciertos seguidos</strong> en menos de 500ms.</div>
+    Si haces clic antes → racha perdida. Necesitas <strong style="color:var(--yellow)">3 aciertos seguidos</strong> en menos de 500ms.<br><span style="color:var(--red);font-weight:800">¡Solo tienes un intento para desbloquear esta pista!</span></div>
     <div class="rstats">
       <div class="rpill">✅ Racha: <strong id="r-st" style="color:var(--green)">0</strong>/3</div>
       <div class="rpill">❌ Fallos: <strong id="r-fa" style="color:var(--pink)">0</strong></div>
@@ -473,60 +493,64 @@ function buildReaction(){
       <span style="font-family:'Fredoka One',cursive;font-size:1.05rem" id="r-lb">Haz clic para comenzar</span>
     </div>
     <div style="text-align:center;font-family:'Fredoka One',cursive;font-size:1.5rem;color:var(--yellow);margin:10px 0;min-height:34px" id="r-ms"></div>`;
-  rS={phase:'idle',streak:0,fails:0,timeout:null};
+  rS={phase:'idle',streak:0,fails:0,timeout:null,failFlag:false};
 }
 function rClick(){
   const box=document.getElementById('rbox');
   const lb=document.getElementById('r-lb');
   const em=document.getElementById('r-em');
   const ms=document.getElementById('r-ms');
-  if(!box)return;
-  if(rS.phase==='idle'){
-    rS.phase='wait';box.className='rbox wait';
-    em.textContent='⏳';lb.textContent='Espera al verde…';ms.textContent='';
-    rS.timeout=_t(()=>{
-      rS.phase='go';rS.t0=performance.now();
-      box.className='rbox go';em.textContent='🟢';lb.textContent='¡AHORA!';
+  function rClick(){
+    if(rS.failFlag) return;
+    const box=document.getElementById('rbox');
+    const lb=document.getElementById('r-lb');
+    const em=document.getElementById('r-em');
+    const ms=document.getElementById('r-ms');
+    if(!box)return;
+    if(rS.phase==='idle'){
+      rS.phase='wait';box.className='rbox wait';
+      em.textContent='⏳';lb.textContent='Espera al verde…';ms.textContent='';
       rS.timeout=_t(()=>{
-        rS.phase='idle';rS.streak=0;
-        box.className='rbox';em.textContent='😴';lb.textContent='Muy lento. Clic para reintentar.';
-        ms.innerHTML='<span style="color:var(--red)">Tiempo agotado ❌</span>';
-        document.getElementById('r-st').textContent=0;
-      },1200);
-    },1500+Math.random()*3500);
-  } else if(rS.phase==='wait'){
-    clearTimeout(rS.timeout);
-    rS.phase='idle';rS.streak=0;rS.fails++;
-    box.className='rbox early';em.textContent='💔';
-    lb.textContent='¡Demasiado pronto! Clic para reintentar.';
-    ms.innerHTML='<span style="color:var(--red)">Racha perdida ❌</span>';
-    document.getElementById('r-st').textContent=0;
-    document.getElementById('r-fa').textContent=rS.fails;
-  } else if(rS.phase==='go'){
-    clearTimeout(rS.timeout);
-    const t=Math.round(performance.now()-rS.t0);
-    rS.phase='idle';
-    if(t<500){
-      rS.streak++;
-      document.getElementById('r-st').textContent=rS.streak;
-      ms.innerHTML=`<span style="color:var(--green)">${t}ms ✅</span>`;
-      box.className='rbox';em.textContent='⚡';
-      lb.textContent=rS.streak>=3?'🎉 ¡Ganaste!':`¡Bien! (${rS.streak}/3) Clic para continuar.`;
-      if(rS.streak>=3){_t(winClue,700);return;}
-    } else {
-      rS.streak=0;rS.fails++;
-      ms.innerHTML=`<span style="color:var(--red)">${t}ms — muy lento ❌</span>`;
-      box.className='rbox';em.textContent='🐌';lb.textContent='Demasiado lento. Racha perdida.';
+        rS.phase='go';rS.t0=performance.now();
+        box.className='rbox go';em.textContent='🟢';lb.textContent='¡AHORA!';
+        rS.timeout=_t(()=>{
+          rS.phase='idle';rS.streak=0;
+          box.className='rbox';em.textContent='😴';lb.textContent='Muy lento. Sin más intentos.';
+          ms.innerHTML='<span style="color:var(--red)">Tiempo agotado ❌</span>';
+          document.getElementById('r-st').textContent=0;
+          rS.failFlag=true;_t(loseClue,1200);
+        },1200);
+      },1500+Math.random()*3500);
+    } else if(rS.phase==='wait'){
+      clearTimeout(rS.timeout);
+      rS.phase='idle';rS.streak=0;rS.fails++;
+      box.className='rbox early';em.textContent='💔';
+      lb.textContent='¡Demasiado pronto! Sin más intentos.';
+      ms.innerHTML='<span style="color:var(--red)">Racha perdida ❌</span>';
       document.getElementById('r-st').textContent=0;
       document.getElementById('r-fa').textContent=rS.fails;
+      rS.failFlag=true;_t(loseClue,1200);
+    } else if(rS.phase==='go'){
+      clearTimeout(rS.timeout);
+      const t=Math.round(performance.now()-rS.t0);
+      rS.phase='idle';
+      if(t<500){
+        rS.streak++;
+        document.getElementById('r-st').textContent=rS.streak;
+        ms.innerHTML=`<span style="color:var(--green)">${t}ms ✅</span>`;
+        box.className='rbox';em.textContent='⚡';
+        lb.textContent=rS.streak>=3?'🎉 ¡Ganaste!':`¡Bien! (${rS.streak}/3) Clic para continuar.`;
+        if(rS.streak>=3){_t(winClue,700);return;}
+      } else {
+        rS.streak=0;rS.fails++;
+        ms.innerHTML=`<span style="color:var(--red)">${t}ms — muy lento ❌</span>`;
+        box.className='rbox';em.textContent='🐌';lb.textContent='Demasiado lento. Sin más intentos.';
+        document.getElementById('r-st').textContent=0;
+        document.getElementById('r-fa').textContent=rS.fails;
+        rS.failFlag=true;_t(loseClue,1200);
+      }
     }
   }
-}
-
-// ═══════════════════════════════════════════
-//  JUEGO 2 — SIMON (P2)
-// ═══════════════════════════════════════════
-const SI_C=['#9333EA','#22D3EE','#10B981','#FCD34D'];
 const SI_E=['🟣','🔵','🟢','🟡'];
 let siS={};
 function buildSimon(){
