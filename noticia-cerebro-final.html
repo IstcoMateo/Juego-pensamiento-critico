@@ -503,12 +503,13 @@ function loseClue(){
 // ═══════════════════════════════════════════
 //  JUEGO 1 — REACCIÓN (P1)
 // ═══════════════════════════════════════════
-let rS={};
-function buildReaction(){
-  document.getElementById('mg-area').innerHTML=`
+let rS = {};
+let rAttempts = 3;
+function buildReaction() {
+  document.getElementById('mg-area').innerHTML = `
     <div class="mg-title">⚡ Juego de Reacción</div>
     <div class="mg-desc">Haz clic SOLO cuando se ponga en <strong style="color:var(--green)">VERDE</strong>.<br>
-    Si haces clic antes → racha perdida. Necesitas <strong style="color:var(--yellow)">3 aciertos seguidos</strong> en menos de 500ms.<br><span style="color:var(--red);font-weight:800">¡Solo tienes un intento para desbloquear esta pista!</span></div>
+    Si haces clic antes → racha perdida. Necesitas <strong style="color:var(--yellow)">3 aciertos seguidos</strong> en menos de 500ms.<br><span style="color:var(--red);font-weight:800">Tienes <strong>3 intentos</strong> para desbloquear esta pista.</span></div>
     <div class="rstats">
       <div class="rpill">✅ Racha: <strong id="r-st" style="color:var(--green)">0</strong>/3</div>
       <div class="rpill">❌ Fallos: <strong id="r-fa" style="color:var(--pink)">0</strong></div>
@@ -518,64 +519,80 @@ function buildReaction(){
       <span style="font-family:'Fredoka One',cursive;font-size:1.05rem" id="r-lb">Haz clic para comenzar</span>
     </div>
     <div style="text-align:center;font-family:'Fredoka One',cursive;font-size:1.5rem;color:var(--yellow);margin:10px 0;min-height:34px" id="r-ms"></div>`;
-  rS={phase:'idle',streak:0,fails:0,timeout:null,failFlag:false};
+  rS = { phase: 'idle', streak: 0, fails: 0, timeout: null, failFlag: false };
 }
-function rClick(){
-  const box=document.getElementById('rbox');
-  const lb=document.getElementById('r-lb');
-  const em=document.getElementById('r-em');
-  const ms=document.getElementById('r-ms');
-  function rClick(){
-    if(rS.failFlag) return;
-    const box=document.getElementById('rbox');
-    const lb=document.getElementById('r-lb');
-    const em=document.getElementById('r-em');
-    const ms=document.getElementById('r-ms');
-    if(!box)return;
-    if(rS.phase==='idle'){
-      rS.phase='wait';box.className='rbox wait';
-      em.textContent='⏳';lb.textContent='Espera al verde…';ms.textContent='';
-      rS.timeout=_t(()=>{
-        rS.phase='go';rS.t0=performance.now();
-        box.className='rbox go';em.textContent='🟢';lb.textContent='¡AHORA!';
-        rS.timeout=_t(()=>{
-          rS.phase='idle';rS.streak=0;
-          box.className='rbox';em.textContent='😴';lb.textContent='Muy lento. Sin más intentos.';
-          ms.innerHTML='<span style="color:var(--red)">Tiempo agotado ❌</span>';
-          document.getElementById('r-st').textContent=0;
-          rS.failFlag=true;_t(loseClue,1200);
-        },1200);
-      },1500+Math.random()*3500);
-    } else if(rS.phase==='wait'){
-      clearTimeout(rS.timeout);
-      rS.phase='idle';rS.streak=0;rS.fails++;
-      box.className='rbox early';em.textContent='💔';
-      lb.textContent='¡Demasiado pronto! Sin más intentos.';
-      ms.innerHTML='<span style="color:var(--red)">Racha perdida ❌</span>';
-      document.getElementById('r-st').textContent=0;
-      document.getElementById('r-fa').textContent=rS.fails;
-      rS.failFlag=true;_t(loseClue,1200);
-    } else if(rS.phase==='go'){
-      clearTimeout(rS.timeout);
-      const t=Math.round(performance.now()-rS.t0);
-      rS.phase='idle';
-      if(t<500){
-        rS.streak++;
-        document.getElementById('r-st').textContent=rS.streak;
-        ms.innerHTML=`<span style="color:var(--green)">${t}ms ✅</span>`;
-        box.className='rbox';em.textContent='⚡';
-        lb.textContent=rS.streak>=3?'🎉 ¡Ganaste!':`¡Bien! (${rS.streak}/3) Clic para continuar.`;
-        if(rS.streak>=3){_t(winClue,700);return;}
+function rClick() {
+  if (rS.failFlag) return;
+  const box = document.getElementById('rbox');
+  const lb = document.getElementById('r-lb');
+  const em = document.getElementById('r-em');
+  const ms = document.getElementById('r-ms');
+  if (!box) return;
+  if (rS.phase === 'idle') {
+    rS.phase = 'wait'; box.className = 'rbox wait';
+    em.textContent = '⏳'; lb.textContent = 'Espera al verde…'; ms.textContent = '';
+    rS.timeout = _t(() => {
+      rS.phase = 'go'; rS.t0 = performance.now();
+      box.className = 'rbox go'; em.textContent = '🟢'; lb.textContent = '¡AHORA!';
+      rS.timeout = _t(() => {
+        rS.phase = 'idle'; rS.streak = 0;
+        box.className = 'rbox'; em.textContent = '😴'; lb.textContent = 'Muy lento.';
+        ms.innerHTML = '<span style="color:var(--red)">Tiempo agotado ❌</span>';
+        document.getElementById('r-st').textContent = 0;
+        rAttempts--;
+        if (rAttempts > 0) {
+          lb.textContent = `Te quedan ${rAttempts} intento(s). Haz clic para reintentar.`;
+          rS.failFlag = false;
+        } else {
+          lb.textContent = 'Sin más intentos.';
+          rS.failFlag = true; _t(loseClue, 1200);
+        }
+      }, 1200);
+    }, 1500 + Math.random() * 3500);
+  } else if (rS.phase === 'wait') {
+    clearTimeout(rS.timeout);
+    rS.phase = 'idle'; rS.streak = 0; rS.fails++;
+    box.className = 'rbox early'; em.textContent = '💔';
+    lb.textContent = '¡Demasiado pronto!';
+    ms.innerHTML = '<span style="color:var(--red)">Racha perdida ❌</span>';
+    document.getElementById('r-st').textContent = 0;
+    document.getElementById('r-fa').textContent = rS.fails;
+    rAttempts--;
+    if (rAttempts > 0) {
+      lb.textContent = `Te quedan ${rAttempts} intento(s). Haz clic para reintentar.`;
+      rS.failFlag = false;
+    } else {
+      lb.textContent = 'Sin más intentos.';
+      rS.failFlag = true; _t(loseClue, 1200);
+    }
+  } else if (rS.phase === 'go') {
+    clearTimeout(rS.timeout);
+    const t = Math.round(performance.now() - rS.t0);
+    rS.phase = 'idle';
+    if (t < 500) {
+      rS.streak++;
+      document.getElementById('r-st').textContent = rS.streak;
+      ms.innerHTML = `<span style="color:var(--green)">${t}ms ✅</span>`;
+      box.className = 'rbox'; em.textContent = '⚡';
+      lb.textContent = rS.streak >= 3 ? '🎉 ¡Ganaste!' : `¡Bien! (${rS.streak}/3) Clic para continuar.`;
+      if (rS.streak >= 3) { _t(winClue, 700); return; }
+    } else {
+      rS.streak = 0; rS.fails++;
+      ms.innerHTML = `<span style="color:var(--red)">${t}ms — muy lento ❌</span>`;
+      box.className = 'rbox'; em.textContent = '🐌'; lb.textContent = 'Demasiado lento.';
+      document.getElementById('r-st').textContent = 0;
+      document.getElementById('r-fa').textContent = rS.fails;
+      rAttempts--;
+      if (rAttempts > 0) {
+        lb.textContent = `Te quedan ${rAttempts} intento(s). Haz clic para reintentar.`;
+        rS.failFlag = false;
       } else {
-        rS.streak=0;rS.fails++;
-        ms.innerHTML=`<span style="color:var(--red)">${t}ms — muy lento ❌</span>`;
-        box.className='rbox';em.textContent='🐌';lb.textContent='Demasiado lento. Sin más intentos.';
-        document.getElementById('r-st').textContent=0;
-        document.getElementById('r-fa').textContent=rS.fails;
-        rS.failFlag=true;_t(loseClue,1200);
+        lb.textContent = 'Sin más intentos.';
+        rS.failFlag = true; _t(loseClue, 1200);
       }
     }
   }
+}
 const SI_E=['🟣','🔵','🟢','🟡','🔴','🟠','🟤','⚪'];
 const SI_C=['#9333EA','#3B82F6','#10B981','#FCD34D','#EF4444','#FB923C','#A16207','#F3F4F6'];
 let siS={};
@@ -694,81 +711,70 @@ function mAns(el,chosen,correct){
 // ═══════════════════════════════════════════
 //  JUEGO 4 — ADIVINA LA PALABRA (P4)
 // ═══════════════════════════════════════════
-// PALABRA: SUENO (5 letras, sin tilde — relacionada con la noticia)
-const WW='SUENO';
-let wS={};
-function buildWord(){
-  wS={att:[],max:4};
-  document.getElementById('mg-area').innerHTML=`
+const WW = 'SUENO';
+let wS = {};
+function buildWord() {
+  wS = { att: [], max: 3 };
+  document.getElementById('mg-area').innerHTML = `
     <div class="mg-title">🔤 Adivina la Palabra</div>
-    <div class="mg-desc"><strong style="color:var(--yellow)">4 intentos</strong> para adivinar la palabra de 5 letras.<br>
+    <div class="mg-desc"><strong style="color:var(--yellow)">3 intentos</strong> para adivinar la palabra de 5 letras.<br>
     🟩 posición correcta &nbsp; 🟨 letra existe &nbsp; ⬛ no existe</div>
     <div class="word-hint">💡 Pista: Proceso que hace el cerebro por las noches (5 letras, sin tilde)</div>
     <div class="wgrid" id="wg">${wRender()}</div>
     <div style="text-align:center;color:#a78bfa;font-size:.8rem;font-weight:800;margin:5px 0">
-      Intentos restantes: <strong id="w-left" style="color:var(--yellow)">4</strong>
+      Intentos restantes: <strong id="w-left" style="color:var(--yellow)">3</strong>
     </div>
     <div class="winp-row">
       <input class="winp" id="winp" maxlength="5" placeholder="XXXXX" autocomplete="off" spellcheck="false">
       <button class="btn btn-primary" onclick="wSubmit()">↩</button>
     </div>
     <p id="w-msg" style="text-align:center;font-weight:800;min-height:22px;font-size:.88rem;margin-top:6px"></p>`;
-  document.getElementById('winp').addEventListener('keydown',e=>{if(e.key==='Enter')wSubmit();});
+  document.getElementById('winp').addEventListener('keydown', e => { if (e.key === 'Enter') wSubmit(); });
 }
-function wRender(){
-  let h='';
-  for(let r=0;r<4;r++){
-    h+='<div class="wrow">';
-    for(let c=0;c<5;c++){
-      let cls='wcell',lt='';
-      if(wS.att[r]){
-        lt=wS.att[r][c]||'';
-        if(wS.att[r][c]===WW[c])cls+=' c';
-        else if(WW.includes(wS.att[r][c]))cls+=' p';
-        else cls+=' a';
-      } else if(r===wS.att.length)cls+=' cur';
-      h+=`<div class="${cls}">${lt}</div>`;
+function wRender() {
+  let h = '';
+  for (let r = 0; r < 3; r++) {
+    h += '<div class="wrow">';
+    for (let c = 0; c < 5; c++) {
+      let cls = 'wcell', lt = '';
+      if (wS.att[r]) {
+        lt = wS.att[r][c] || '';
+        if (wS.att[r][c] === WW[c]) cls += ' c';
+        else if (WW.includes(wS.att[r][c])) cls += ' p';
+        else cls += ' a';
+      } else if (r === wS.att.length) cls += ' cur';
+      h += `<div class="${cls}">${lt}</div>`;
     }
-    h+='</div>';
+    h += '</div>';
   }
   return h;
 }
-function wSubmit(){
-  const inp=document.getElementById('winp');
-  const val=inp.value.toUpperCase().replace(/[ÑÚÉÁÍÓüéáíóú]/g,c=>({Ñ:'N',Ú:'U',É:'E',Á:'A',Í:'I',Ó:'O'}[c]||c)).trim();
-  const msg=document.getElementById('w-msg');
-  if(val.length!==5){msg.innerHTML='<span style="color:var(--red)">Necesitas exactamente 5 letras.</span>';return;}
-  wS.att.push(val);inp.value='';
-  document.getElementById('wg').innerHTML=wRender();
-  document.getElementById('w-left').textContent=4-wS.att.length;
-  if(val===WW){
-    msg.innerHTML='<span style="color:var(--green)">🎉 ¡Correcto! Era SUEÑO.</span>';
-    wS.solved=true;
-    _t(winClue,900);
+function wSubmit() {
+  const inp = document.getElementById('winp');
+  const val = inp.value.toUpperCase().replace(/[ÑÚÉÁÍÓüéáíóú]/g, c => ({ Ñ: 'N', Ú: 'U', É: 'E', Á: 'A', Í: 'I', Ó: 'O' }[c] || c)).trim();
+  const msg = document.getElementById('w-msg');
+  if (val.length !== 5) { msg.innerHTML = '<span style="color:var(--red)">Necesitas exactamente 5 letras.</span>'; return; }
+  wS.att.push(val); inp.value = '';
+  document.getElementById('wg').innerHTML = wRender();
+  document.getElementById('w-left').textContent = 3 - wS.att.length;
+  if (val === WW) {
+    msg.innerHTML = '<span style="color:var(--green)">🎉 ¡Correcto! Era SUEÑO.</span>';
+    wS.solved = true;
+    _t(winClue, 900);
     return;
   }
-  if(wS.att.length>=4){
-    // Contar intentos correctos (al menos 3 de 4 con 3+ letras en posición exacta)
-    let correctTries = 0;
-    for(let i=0;i<wS.att.length;i++){
-      const attempt=wS.att[i];
-      if(attempt && attempt.length===5){
-        const ok=attempt.split('').filter((ch,j)=>ch===WW[j]).length;
-        if(ok>=3) correctTries++;
-      }
+  if (wS.att.length >= 3) {
+    // Si acertó la palabra, gana la pista
+    if (wS.solved) {
+      return;
     }
-    if(correctTries>=3){
-      msg.innerHTML='<span style="color:var(--green)">🎉 ¡Bien! Acertaste la mayoría de las palabras.</span>';
-      wS.solved=true;
-      _t(winClue,1200);
-    }else{
-      msg.innerHTML=`<span style="color:var(--red)">😵 Era <strong>${WW}</strong>. Pista perdida.</span>`;
-      _t(()=>{loseClue();},2000);
-    }
+    // Si no acertó, pierde la pista
+    msg.innerHTML = `<span style="color:var(--red)">😵 Era <strong>${WW}</strong>. Pista perdida.</span>`;
+    _t(() => { loseClue(); }, 2000);
     return;
   }
-  const ok=val.split('').filter((ch,i)=>ch===WW[i]).length;
-  msg.innerHTML=`<span style="color:var(--yellow)">${ok} letra(s) en posición exacta 🟩</span>`;
+  const ok = val.split('').filter((ch, i) => ch === WW[i]).length;
+  msg.innerHTML = `<span style="color:var(--yellow)">${ok} letra(s) en posición exacta 🟩</span>`;
 }
 
 // ═══════════════════════════════════════════
