@@ -716,7 +716,7 @@ function wSubmit(){
   document.getElementById('wg').innerHTML=wRender();
   document.getElementById('w-left').textContent=4-wS.att.length;
   if(val===WW){msg.innerHTML='<span style="color:var(--green)">🎉 ¡Correcto! Era SUEÑO.</span>';_t(winClue,900);return;}
-  if(wS.att.length>=4){msg.innerHTML=`<span style="color:var(--red)">😵 Era <strong>${WW}</strong>. Reiniciando…</span>`;_t(buildWord,2000);return;}
+  if(wS.att.length>=4){msg.innerHTML=`<span style="color:var(--red)">😵 Era <strong>${WW}</strong>. Pista perdida.</span>`;_t(()=>{loseClue();},2000);return;}
   const ok=val.split('').filter((ch,i)=>ch===WW[i]).length;
   msg.innerHTML=`<span style="color:var(--yellow)">${ok} letra(s) en posición exacta 🟩</span>`;
 }
@@ -730,13 +730,13 @@ const SP=[
   {c:'#10B981',l:'🔑 PISTA',w:true},{c:'#F97316',l:'❌ NOPE',w:false},
   {c:'#3B82F6',l:'🔑 PISTA',w:true},{c:'#BE185D',l:'❌ NOPE',w:false},
 ];
-let spS={rot:0,spin:false,att:0};
+let spS={rot:0,spin:false,att:0,streak:0,failFlag:false};
 function buildSpinner(){
-  spS={rot:0,spin:false,att:0};
+  spS={rot:0,spin:false,att:0,streak:0,failFlag:false};
   document.getElementById('mg-area').innerHTML=`
     <div class="mg-title">🎰 Ruleta de la Suerte</div>
-    <div class="mg-desc">Gira la ruleta. Cae en <strong style="color:var(--yellow)">🔑 PISTA</strong> para ganar.<br>
-    La probabilidad de ganar sube con cada intento. Máximo <strong style="color:var(--cyan)">5 giros</strong>.</div>
+    <div class="mg-desc">Gira la ruleta. Debes ganar <strong style="color:var(--yellow)">3 veces</strong> para desbloquear la pista.<br>
+    La probabilidad de ganar es baja. Si fallas una vez, pierdes la pista.</div>
     <div class="spin-wrap">
       <div class="spin-cw">
         <div class="sp-arrow"></div>
@@ -744,7 +744,8 @@ function buildSpinner(){
         <div class="sp-center"></div>
       </div>
       <div style="color:#a78bfa;font-size:.8rem;font-weight:800;margin:8px 0">
-        Giros usados: <strong id="sp-att" style="color:var(--yellow)">0</strong>/5
+        Giros usados: <strong id="sp-att" style="color:var(--yellow)">0</strong>/∞
+        &nbsp;|&nbsp; Racha: <strong id="sp-streak" style="color:var(--green)">0</strong>/3
       </div>
       <div style="font-family:'Fredoka One',cursive;font-size:1.2rem;min-height:30px;margin:6px 0" id="sp-res"></div>
       <button class="btn btn-yellow" id="sp-btn" onclick="spSpin()" style="font-size:1.05rem;padding:13px 30px">🎰 ¡Girar!</button>
@@ -768,11 +769,10 @@ function spDraw(rot){
   ctx.fillStyle='#07041A';ctx.fill();ctx.strokeStyle='#FCD34D';ctx.lineWidth=3;ctx.stroke();
 }
 function spSpin(){
-  if(spS.spin)return;
-  if(spS.att>=5){document.getElementById('sp-res').innerHTML='<span style="color:var(--red)">Sin giros. Cierra y reinicia.</span>';return;}
+  if(spS.spin||spS.failFlag)return;
   spS.spin=true;document.getElementById('sp-btn').disabled=true;
   spS.att++;document.getElementById('sp-att').textContent=spS.att;
-  const win=Math.random()<(0.3+spS.att*0.13)||spS.att>=5;
+  const win=Math.random()<0.18; // baja probabilidad
   const arc=(Math.PI*2)/SP.length;
   const spins=(4+Math.floor(Math.random()*4))*Math.PI*2;
   const winI=[0,2,4,6],loseI=[1,3,5,7];
@@ -788,8 +788,16 @@ function spSpin(){
     if(el<1){requestAnimationFrame(anim);return;}
     spS.rot=finalR%(Math.PI*2);spS.spin=false;
     const res=document.getElementById('sp-res');
-    if(win){res.innerHTML='<span style="color:var(--green)">🎉 ¡PISTA GANADA!</span>';_t(winClue,1200);}
-    else{res.innerHTML='<span style="color:var(--pink)">😅 ¡Otra vez!</span>';document.getElementById('sp-btn').disabled=false;}
+    if(win){
+      spS.streak++;
+      document.getElementById('sp-streak').textContent=spS.streak;
+      res.innerHTML='<span style="color:var(--green)">🎉 ¡PISTA GANADA!</span>';
+      if(spS.streak>=3){_t(winClue,1200);return;}
+      document.getElementById('sp-btn').disabled=false;
+    } else {
+      res.innerHTML='<span style="color:var(--red)">❌ Fallaste. Pista perdida.</span>';
+      spS.failFlag=true;_t(loseClue,1200);
+    }
   }
   requestAnimationFrame(anim);
 }
